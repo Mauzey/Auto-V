@@ -1,40 +1,47 @@
 # import modules
+from vehicle import Vehicle
+from utils import process_image, debug_overlay
+
 from PIL import ImageGrab
 
 import numpy as np
-import cv2
 import time
+import cv2
 
-def process_img(image):
-    """
-    
-    """
-    
-    # convert to greyscale
-    grey_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # edge detection
-    edge_image = cv2.Canny(grey_image, threshold1=200, threshold2=300)
-    
-    return edge_image
 
-def main():
+if __name__ == '__main__':
+    # init car and debug
+    car = Vehicle()
+    
+    debug_info = {
+        'frame_time': '',
+        }
+    
     last_time = time.time()
     
-    while True:
-        # capture top left corner (800x640px) of the screen
+    # main loop
+    while(True):
+        # capture the top left corner (800x640px) of the screen
         raw_screen = np.array(ImageGrab.grab(bbox=(0, 40, 800, 640)))
-        
-        #print('loop took {} seconds'.format(time.time() - last_time))
         
         last_time = time.time()
         
-        # process captured screen and show it
-        new_screen = process_img(raw_screen)
-        cv2.imshow('window', new_screen)
+        # process the captured screen
+        processed_screen = process_image(raw_screen)
         
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        # time taken to process the frame
+        debug_info['frame_time'] = round(time.time() - last_time, 5)
+        
+        # print debug overlay
+        debug_screen = debug_overlay(processed_screen, debug_info)
+        
+        # show screen
+        cv2.imshow('Auto V', debug_screen)
+        
+        # process user input
+        keypress = cv2.waitKey(25)
+        
+        if keypress & 0xFF == ord('q'):
+            # quit application
             cv2.destroyAllWindows()
             break
-
-main()
