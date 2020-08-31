@@ -10,7 +10,7 @@ class Vehicle():
         
         # vehicle axis values
         self.axis = {
-            'steer_angle': 0.5,
+            'steering_angle': 0.5,
             'throttle_value': 0,
             'brake_value': 0
         }
@@ -24,7 +24,7 @@ class Vehicle():
         self.update()
     
     def update(self):
-        self.controller.data.wAxisX = int(self.axis['steer_angle'] * Vehicle.max_axis_value)
+        self.controller.data.wAxisX = int(self.axis['steering_angle'] * Vehicle.max_axis_value)
         self.controller.data.wAxisY = int(self.axis['throttle_value'] * Vehicle.max_axis_value)
         self.controller.data.wAxisZ = int(self.axis['brake_value'] * Vehicle.max_axis_value)
         

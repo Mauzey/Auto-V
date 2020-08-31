@@ -1,5 +1,6 @@
 # import modules
 import numpy as np
+import math
 import cv2
 
 class LaneDetector():
@@ -11,6 +12,9 @@ class LaneDetector():
         
         # stores hough transform lines
         self.hough_lines = []
+        
+        # stores lane markings
+        self.lane_markings = []
         
         print('[INFO] Lane Detector object initialised...')
     
@@ -35,11 +39,39 @@ class LaneDetector():
                                       minLineLength=8, maxLineGap=4)
         
         # print lane markings over raw frames
-        lane_markings = average_slope_intercept(frame, self.hough_lines)
-        lane_frame = draw_lane_markings(frame, lane_markings)
+        self.lane_markings = average_slope_intercept(frame, self.hough_lines)
+        lane_frame = draw_lane_markings(frame, self.lane_markings)
         
         #return lane_frame
         return cv2.cvtColor(lane_frame, cv2.COLOR_BGR2RGB)
+    
+    def calculate_steering_angle(self, frame):
+        if len(self.lane_markings) == 0:
+            return 0.5
+        
+        frame_height = frame.shape[0]
+        frame_width = frame.shape[1]
+        
+        # if only one lane marking is found, follow it
+        if len(self.lane_markings) == 1:
+            x1, _, x2, _ = self.lane_markings[0][0]
+            xOffset = x2 - x1
+        # if two lane markings are found
+        else:
+            _, _, lX2, _ = self.lane_markings[0][0]
+            _, _, rX2, _ = self.lane_markings[1][0]
+            
+            mid = int(frame_width / 2)
+            xOffset = (lX2 - rX2) / 2 - mid
+        
+        yOffset = int(frame_height / 2)
+        
+        angle_to_mid_rad = math.atan(xOffset / yOffset)
+        angle_to_mid_deg = int(angle_to_mid_rad * 180 / math.pi) + 90
+        
+        steering_angle = angle_to_mid_deg / 100
+        
+        return steering_angle
 
 
 

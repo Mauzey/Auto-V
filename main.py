@@ -17,6 +17,8 @@ if __name__ == '__main__':
     
     debug_info = {
         'frame_time': '',
+        'steering_angle': 0.5,
+        'throttle_value': 0
         }
     
     last_time = time.time()
@@ -30,6 +32,8 @@ if __name__ == '__main__':
         
         # process the captured screen
         processed_screen = lane_detector.detect_lanes(raw_screen)
+        car.set_axis('steering_angle', lane_detector.calculate_steering_angle(processed_screen))
+        debug_info['steering_angle'] = car.axis['steering_angle']
         
         # time taken to process the frame
         debug_info['frame_time'] = round(time.time() - last_time, 5)
@@ -47,3 +51,11 @@ if __name__ == '__main__':
             # quit application
             cv2.destroyAllWindows()
             break
+        elif keypress & 0xFF == ord('5'):
+            # toggle car's throttle
+            if car.axis['throttle_value'] == 0:
+                car.set_axis('throttle_value', 0.5)
+            else:
+                car.set_axis('throttle_value', 0)
+            
+            debug_info['throttle_value'] = car.axis['throttle_value']
