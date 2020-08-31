@@ -1,6 +1,7 @@
 # import modules
+from lane_detector import LaneDetector
 from vehicle import Vehicle
-from utils import process_image, debug_overlay
+from utils import debug_overlay
 
 from PIL import ImageGrab
 
@@ -10,8 +11,9 @@ import cv2
 
 
 if __name__ == '__main__':
-    # init car and debug
+    # init car and lane detector objects
     car = Vehicle()
+    lane_detector = LaneDetector()
     
     debug_info = {
         'frame_time': '',
@@ -27,7 +29,7 @@ if __name__ == '__main__':
         last_time = time.time()
         
         # process the captured screen
-        processed_screen = process_image(raw_screen)
+        processed_screen = lane_detector.detect_lanes(raw_screen)
         
         # time taken to process the frame
         debug_info['frame_time'] = round(time.time() - last_time, 5)

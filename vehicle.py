@@ -16,6 +16,8 @@ class Vehicle():
         }
         
         self.update()
+        
+        print('[INFO] Vehicle object initialised...')
     
     def set_axis(self, axis, value):
         self.axis[axis] = value
